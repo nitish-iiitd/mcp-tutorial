@@ -1,0 +1,9 @@
+:root { --soft: #f6f8fb; --ink: #172033; }
+body { background: var(--soft); color: var(--ink); }
+.hero, .tester { background: linear-gradient(135deg, #ffffff, #eef5ff); border: 1px solid #e6ecf5; border-radius: 28px; box-shadow: 0 18px 60px rgba(27, 39, 71, .08); }
+.endpoint-card, .info-card { background: #fff; border: 1px solid #e8edf5; border-radius: 22px; padding: 24px; box-shadow: 0 10px 30px rgba(27, 39, 71, .06); }
+.info-card h3 { font-size: 1.25rem; font-weight: 700; }
+.section-heading { max-width: 820px; margin-bottom: 18px; }
+.result-box { background: #0f172a; color: #dbeafe; min-height: 260px; border-radius: 18px; padding: 18px; overflow: auto; font-size: .9rem; }
+code { color: #0d6efd; }
+.nav-pills .nav-link { border-radius: 999px; }
