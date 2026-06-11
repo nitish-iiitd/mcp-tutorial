@@ -7,13 +7,15 @@ on:
 
 env:
   IMAGE_NAME: nitish2794/mcp-tutorial
+  DEPLOYMENT_REPO: nitish-iiitd/my-vps-deployments
+  HELM_VALUES_PATH: apps/mcp-tutorial/values.yaml
 
 jobs:
   docker:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout app repo
         uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
@@ -22,9 +24,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set image tag
+      - name: Set datetime image tag
         id: vars
-        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "tag=$(TZ='Asia/Kolkata' date +'%d%m%Y_%H%M%S')" >> "$GITHUB_OUTPUT"
 
       - name: Build image
         run: |
@@ -35,3 +38,32 @@ jobs:
         run: |
           docker push $IMAGE_NAME:${{ steps.vars.outputs.tag }}
           docker push $IMAGE_NAME:latest
+
+      - name: Checkout deployment repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DEPLOYMENT_REPO }}
+          token: ${{ secrets.DEPLOYMENT_REPO_TOKEN }}
+          path: deployment-repo
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Update image in Helm values
+        run: |
+          cd deployment-repo
+          yq -i '.image.repository = "${{ env.IMAGE_NAME }}"' $HELM_VALUES_PATH
+          yq -i '.image.tag = "${{ steps.vars.outputs.tag }}"' $HELM_VALUES_PATH
+          yq -i '.image.pullPolicy = "IfNotPresent"' $HELM_VALUES_PATH
+
+      - name: Commit and push deployment change
+        run: |
+          cd deployment-repo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add $HELM_VALUES_PATH
+          git commit -m "Update mcp-tutorial image to ${{ steps.vars.outputs.tag }}" || echo "No changes to commit"
+          git push
