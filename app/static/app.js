@@ -1,5 +1,6 @@
 const output = document.getElementById('output');
 const statusEl = document.getElementById('status');
+document.getElementById("mcp-endpoint").textContent = `${window.location.origin}/mcp`;
 
 function show(value) {
   output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);

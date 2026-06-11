@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from app.mcp_server import mcp
 
-mcp_app = mcp.http_app(path="/mcp")
+mcp_app = mcp.http_app(path="/")
 
 app = FastAPI(
     title="MCP Tutorial",

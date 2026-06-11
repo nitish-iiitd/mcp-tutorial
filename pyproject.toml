@@ -1,5 +1,5 @@
 [project]
-name = "weather-mcp-demo"
+name = "mcp-tutorial"
 version = "0.1.0"
 description = "A professional FastMCP weather server with a dashboard for tools, resources, and prompts."
 requires-python = ">=3.11"
